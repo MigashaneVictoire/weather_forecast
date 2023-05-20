@@ -1,6 +1,9 @@
+import os
 from pprint import pprint
+
 import functions as func
 import env
+
 
 # send email importsi
 import smtplib
@@ -58,13 +61,13 @@ def email_propt(lat, lon,
         Paragraph string describing the current weather forcust
     """
     email_message = f"The current weather in {city}, located at latitude {lat} and longitude {lon}, \
-is characterized by {description}. The temperature is {temp} Kelvin, with a maximum of {temp_max} Kelvin \
-and a minimum of {temp_min} Kelvin. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa.\
+is characterized by {description}. The temperature is {temp} Kelvin, with a maximum of {temp_max} Kelvin, \
+and a minimum of {temp_min} Kelvin. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
 The wind is blowing at a speed of {speed} m/s from a direction of {degree} degrees. The visibility is \
---excellent-- at {visibility} meters. The weather condition is represented by the presence of {description}.\
-The weather code is --804--, indicating the --cloudiness--. The sunrise occurred at --1684577705-- seconds \
-since the Unix epoch, while the sunset is expected to happen at --1684631015-- seconds. {city} \
-is located in the {country}, and the local time zone is --UTC-4 (Eastern Daylight Time)--."
+excellent at {visibility} meters. The weather condition is represented by the presence of {description}. \
+The weather code is 804, indicating the cloudiness. The sunrise occurred at 1684577705 seconds \
+since the Unix epoch, while the sunset is expected to happen at 1684631015 seconds. {city} \
+is located in the {country}, and the local time zone is Eastern Daylight Time."
     return email_message
 
 # connect and send email
@@ -85,7 +88,7 @@ def connect_email(sender_email, passCode, message):
     msg.attach(MIMEText(message, 'plain'))
 
     # Set up the SMTP server and send the email
-    smtp_server = "smtp.google.com"
+    smtp_server = "smtp.gmail.com"
     smtp_port = 587
 
     # Set up the SMTP server and send the email:
@@ -102,6 +105,9 @@ def connect_email(sender_email, passCode, message):
     finally:
         server.quit()
 
+def speak(message) -> str:
+    os.system(f"say {message}")
+
 
 # Program will run starting here
 if __name__ == "__main__":
@@ -116,7 +122,6 @@ if __name__ == "__main__":
     # api request link
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}"
     # data = func.full_curr_city_json(url)
-
 
     # user_preview = input("How would like your forcast? (Celsius 'C' or Fehrenheit 'F')\n")
 
@@ -139,5 +144,6 @@ if __name__ == "__main__":
                 visibility
                  )
     
+    speak(email_message)
 
-    connect_email(email, password, email_message)
+    # connect_email(email, password, email_message)
