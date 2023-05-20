@@ -1,6 +1,6 @@
 from pprint import pprint
 import functions as func
-from env import open_weather_map_api_key as key
+import env
 
 # send email importsi
 import smtplib
@@ -67,15 +67,54 @@ since the Unix epoch, while the sunset is expected to happen at --1684631015-- s
 is located in the {country}, and the local time zone is --UTC-4 (Eastern Daylight Time)--."
     return email_message
 
+# connect and send email
+def connect_email(sender_email, passCode, message):
+
+    # Set up email details
+    receiver_email = "migashanevictoire@gmail.com"
+    subject = "Your Morning Weather Forcast From Python"
+    message = email_message
+
+    # Create a multipart message object and set the headers
+    msg = MIMEMultipart()
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
+    msg["Subject"] = subject
+
+    # Attach the message to the email
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Set up the SMTP server and send the email
+    smtp_server = "smtp.google.com"
+    smtp_port = 587
+
+    # Set up the SMTP server and send the email:
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, passCode)
+        server.send_message(msg)
+        # server.sendmail(sender_email, receiver_email,msg)
+        print("Email sent successfuly!")
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+    finally:
+        server.quit()
+
+
 # Program will run starting here
 if __name__ == "__main__":
+    # get cridentials
+    api_key = env.open_weather_map_api_key()
+    email, password = env.email_cridentials()
 
     print("~~~~~~ Welsome to 24 Weather Cast ~~~~~~")
     city_name = input("Enter a city name: ")
     city_name = city_name.replace(" ", "%20") # replace empty space if contained in city input
     
     # api request link
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={key()}"
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}"
     # data = func.full_curr_city_json(url)
 
 
@@ -101,3 +140,4 @@ if __name__ == "__main__":
                  )
     
 
+    connect_email(email, password, email_message)
