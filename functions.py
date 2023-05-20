@@ -1,31 +1,96 @@
 import requests
 
-def full_city_json(url):
+# api call
+def full_curr_city_json(url) -> str:
+    """
+    Parameters:
+        url: string containing city name and api key for requests
+    Returns:
+        current weather json data from openweathermap.org
+    """
     return requests.get(url).json()
 
-def get_coordinates(url):
-    lat = url["coord"]["lat"]
-    lon = url["coord"]["lat"]
+# coordinates data
+def get_coordinates(data) -> dict:
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        latitude and longitude of current city
+    """
+    lat = data["coord"]["lat"]
+    lon = data["coord"]["lat"]
     return lat, lon
 
-def get_temperature(url):
-    temp = url["main"]["temp"]
-    temp_min= url["main"]["temp_min"]
-    temp_max= url["main"]["temp_max"]
+# get temperature data
+def get_temperature(data) -> dict:
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        current temperature, minimum temperature and maximum teperature
+    """
+    temp = data["main"]["temp"]
+    temp_min= data["main"]["temp_min"]
+    temp_max= data["main"]["temp_max"]
     return temp, temp_min, temp_max
 
-def get_feels(url):
-    feels_like = url["main"]["feels_like"]
-    humidity = url["main"]["humidity"]
-    pressure = url["main"]["pressure"]
+# get additional temp data
+def get_feels(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        outdoors feel, himidity and pressure
+    """
+    feels_like = data["main"]["feels_like"]
+    humidity = data["main"]["humidity"]
+    pressure = data["main"]["pressure"]
     return feels_like, humidity, pressure
 
-def city_and_country_names(url):
-    city = url["name"]
-    country = url["sys"]["country"]
+# get country and city names
+def city_and_country_names(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        name of city and name of country
+    """
+    city = data["name"]
+    country = data["sys"]["country"]
     return city, country
 
-def get_weather_description(url):
-    description = url["weather"][0]["description"]
-    icon = url["weather"][0]["icon"]
+# describe current weather
+def get_weather_description(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        weather discription and icon image code
+    """
+    description = data["weather"][0]["description"]
+    icon = data["weather"][0]["icon"]
     return description, icon
+
+# wind description data
+def get_wind(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        wind direction and wind speed
+    """
+    degree = data["wind"]["deg"]
+    speed = data["wind"]["speed"]
+    return degree, speed
+
+# get view data
+def get_visibility(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        out doors visibility
+    """
+    visibility = data["visibility"]
+    return visibility
