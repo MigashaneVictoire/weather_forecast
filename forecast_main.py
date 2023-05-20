@@ -2,6 +2,10 @@ from pprint import pprint
 import functions as func
 from env import open_weather_map_api_key as key
 
+# send email importsi
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 def curr_data():
@@ -32,6 +36,37 @@ def curr_data():
         'wind': {'deg': 280, 'speed': 5.14}}
     return dic
 
+def email_propt(lat, lon, 
+                temp, temp_min, temp_max,
+                feels_like, humidity, pressure,
+                city, country,
+                description, icon,
+                degree, speed,
+                visibility
+                ):
+    """
+    Parameters:
+        ¿¿¿ All weather data functions ¿¿¿
+            lat, lon, 
+            temp, temp_min, temp_max,
+            feels_like, humidity, pressure,
+            city, country,
+            description, icon,
+            degree, speed,
+            visibility
+    Returns:
+        Paragraph string describing the current weather forcust
+    """
+    email_message = f"The current weather in {city}, located at latitude {lat} and longitude {lon}, \
+is characterized by {description}. The temperature is {temp} Kelvin, with a maximum of {temp_max} Kelvin \
+and a minimum of {temp_min} Kelvin. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa.\
+The wind is blowing at a speed of {speed} m/s from a direction of {degree} degrees. The visibility is \
+--excellent-- at {visibility} meters. The weather condition is represented by the presence of {description}.\
+The weather code is --804--, indicating the --cloudiness--. The sunrise occurred at --1684577705-- seconds \
+since the Unix epoch, while the sunset is expected to happen at --1684631015-- seconds. {city} \
+is located in the {country}, and the local time zone is --UTC-4 (Eastern Daylight Time)--."
+    return email_message
+
 # Program will run starting here
 if __name__ == "__main__":
 
@@ -46,5 +81,23 @@ if __name__ == "__main__":
 
     # user_preview = input("How would like your forcast? (Celsius 'C' or Fehrenheit 'F')\n")
 
+    # All weather function call re-assignment
+    lat, lon = func.get_coordinates(curr_data())
+    temp, temp_min, temp_max = func.get_temperature(curr_data())
+    feels_like, humidity, pressure= func.get_feels(curr_data())
+    city, country = func.city_and_country_names(curr_data())
+    description, icon = func.get_weather_description(curr_data())
+    degree, speed = func.get_wind(curr_data())
+    visibility = func.get_visibility(curr_data())
+
+    # Full weather forecast message
+    email_message = email_propt(lat, lon, 
+                temp, temp_min, temp_max,
+                feels_like, humidity, pressure,
+                city, country,
+                description, icon,
+                degree, speed,
+                visibility
+                 )
     
-    print(func.get_feels(curr_data()))
+

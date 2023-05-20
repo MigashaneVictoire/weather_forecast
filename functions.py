@@ -36,7 +36,7 @@ def get_temperature(data) -> dict:
     return temp, temp_min, temp_max
 
 # get additional temp data
-def get_feels(data):
+def get_feels(data) -> dict:
     """
     Parameters:
         data: json data from api call
@@ -49,7 +49,7 @@ def get_feels(data):
     return feels_like, humidity, pressure
 
 # get country and city names
-def city_and_country_names(data):
+def city_and_country_names(data) -> dict:
     """
     Parameters:
         data: json data from api call
@@ -61,7 +61,7 @@ def city_and_country_names(data):
     return city, country
 
 # describe current weather
-def get_weather_description(data):
+def get_weather_description(data) -> dict:
     """
     Parameters:
         data: json data from api call
@@ -71,9 +71,10 @@ def get_weather_description(data):
     description = data["weather"][0]["description"]
     icon = data["weather"][0]["icon"]
     return description, icon
+    # note: could add some NLP to show clodiness responces
 
 # wind description data
-def get_wind(data):
+def get_wind(data) -> dict:
     """
     Parameters:
         data: json data from api call
@@ -85,7 +86,7 @@ def get_wind(data):
     return degree, speed
 
 # get view data
-def get_visibility(data):
+def get_visibility(data) -> dict:
     """
     Parameters:
         data: json data from api call
