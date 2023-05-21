@@ -1,4 +1,5 @@
 import requests
+import numpy as np
 import os
 
 # send email importsi
@@ -51,12 +52,22 @@ def get_feels(data) -> dict:
     Parameters:
         data: json data from api call
     Returns:
-        outdoors feel, himidity and pressure
+        outdoors feel, himidity , humidity_description, and pressure
     """
     feels_like = data["main"]["feels_like"]
     humidity = data["main"]["humidity"]
+    humidity_description = ""
     pressure = data["main"]["pressure"]
-    return feels_like, humidity, pressure
+
+    # humidity description
+    if humidity < 35:
+        humidity_description = "low"
+    elif humidity > 75:
+        humidity_description = "high"
+    else:
+        humidity_description = "fair"
+
+    return feels_like, humidity, humidity_description, pressure
 
 # get country and city names
 def city_and_country_names(data) -> dict:
@@ -76,11 +87,12 @@ def get_weather_description(data) -> dict:
     Parameters:
         data: json data from api call
     Returns:
-        weather discription and icon image code
+        weather discription, icon image code, and main forecasts to the day
     """
     description = data["weather"][0]["description"]
     icon = data["weather"][0]["icon"]
-    return description, icon
+    main = data["weather"][0]["main"]
+    return description, icon, main
     # note: could add some NLP to show clodiness responces
 
 # wind description data
@@ -121,12 +133,49 @@ def mac_speak(message) -> str:
 # Convert temp from kelvin to celsius
 def kelvin_to_celsius(kelvin) -> float:
     celsius = kelvin - 273.15
-    return celsius
+    return round(celsius, 2)
 
-# Convert temp from kelvin to fahrenheit
-def kelvin_to_fahrenheit(kelvin) -> float:
-    fahrenheit = ((kelvin - 273.15) * (9/5)) + 32
-    return fahrenheit
+# categorize compass
+def compass(degree):
+    # north
+    if degree >= 337.5 or degree in np.arange(0.0,22.5, 0.1):
+        return "north"
+    #north east
+    elif degree in np.arange(22.5, 67.5, 0.1):
+        return "north east"
+    
+    # east
+    elif degree in np.arange(67.5, 112.5, 0.1):
+        return "east"
+    # south east
+    elif degree in np.arange(112.5, 157.5, 0.1):
+        return "south east"
+    
+    # south
+    elif degree in np.arange(157.5, 202.5, 0.1):
+        return "south"
+    # south west
+    elif degree in np.arange(202.5, 247.5, 0.1):
+        return "south west"
+    
+    # west
+    elif degree in np.arange(247.5, 292.5, 0.1):
+        return "west"
+    # north west
+    elif degree in np.arange(292.5, 337.5, 0.1):
+        return "north west"
+    
+# categorize visibility
+def get_visibility_options(visibility) -> float:
+    """
+    
+    """
+    if (visibility / 1000) >= 10: # 10 kilometers
+        return "excelent"
+    if (visibility / 1000) >= 5: # 5 kilometers
+        return "moderate"
+    else:
+        return "poor"
 
 # connect and send email
 def connect_email(sender_email, passCode, message) -> "str, str, str":

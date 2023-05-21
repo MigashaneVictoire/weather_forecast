@@ -31,35 +31,47 @@ def curr_data():
         'wind': {'deg': 280, 'speed': 5.14}}
     return dic
 
+
 def email_propt(lat, lon, 
                 temp, temp_min, temp_max,
-                feels_like, humidity, pressure,
+                feels_like, humidity, humidity_description,pressure,
                 city, country,
-                description, icon,
+                description, icon, main,
                 degree, speed,
-                visibility
+                visibility, wind_direction,
+                visibility_categories
                 ):
     """
     Parameters:
         ¿¿¿ All weather data functions ¿¿¿
             lat, lon, 
             temp, temp_min, temp_max,
-            feels_like, humidity, pressure,
+            feels_like, humidity, humidity_description, pressure,
             city, country,
-            description, icon,
+            description, icon, main,
             degree, speed,
-            visibility
+            visibility, wind_direction,
+            visibility_categories
     Returns:
         Paragraph string describing the current weather forcust
     """
-    email_message = f"The current weather in {city}, located at latitude {lat} and longitude {lon}, \
-is characterized by {description}. The temperature is {temp} Celsius, with a maximum of {temp_max} Celsius, \
-and a minimum of {temp_min} Celsius. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
-The wind is blowing at a speed of {speed} meters per second, from a direction of {degree} degrees. The visibility is \
-excellent at {visibility} meters. The weather condition is represented by the presence of {description}. \
-The weather code is 804, indicating the cloudiness. The sunrise occurred at 1684577705 seconds \
-since the Unix epoch, while the sunset is expected to happen at 1684631015 seconds. {city} \
-is located in the {country}, and the local time zone is Eastern Daylight Time."
+    name = "Victoire Migashane"
+#     email_message = f"The current weather in {city}, located at latitude {lat} and longitude {lon}, \
+# is characterized by {description}. The temperature is {temp} Celsius, with a maximum of {temp_max} Celsius, \
+# and a minimum of {temp_min} Celsius. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
+# The wind is blowing at a speed of {speed} meters per second, from a direction of {degree} degrees. The visibility is \
+# excellent at {visibility} meters. The weather condition is represented by the presence of {description}. \
+# The weather code is 804, indicating the cloudiness. The sunrise occurred at 1684577705 seconds \
+# since the Unix epoch, while the sunset is expected to happen at 1684631015 seconds. {city} \
+# is located in the {country}, and the local time zone is Eastern Daylight Time."
+
+    email_message = f"""Good morning {name}! Here's your daily python weather forecast for {city}:\n\n\
+Today, the weather in {city} is mostly {main} with {description}. The temperature is currently around {temp} Celsius, \
+with a maximum of {temp_max} Celsius, and a minimum of {temp_min} Celsius. \n\nToday's feels like temperature is {feels_like} Celsius. \
+The humidity is relatively {humidity_description} at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
+The wind is blowing from the. {wind_direction}. at a speed of {speed} meters per second, with a direction of {degree} degrees. \n\n\
+Visibility is {visibility_categories}, reaching {visibility} meters. The sunrise was at the local time of 06:41 AM, and the sunset is expected to occur at 08:36 PM.\
+Enjoy your day in Grand Rapids, and don't forget to carry an umbrella or dress accordingly for the overcast conditions."""
     return email_message
 
 
@@ -71,7 +83,7 @@ if __name__ == "__main__":
         email, password = env.email_cridentials()
 
         print("~~~~~~ Welsome to 24 Weather Cast ~~~~~~")
-
+        
         # set default city beause I want dayly emails with no questions
         city_name = "San Antonio"
         # city_name = input("Enter a city name: ")  # uncomment to use different city
@@ -84,26 +96,31 @@ if __name__ == "__main__":
         # All weather function call re-assignment
         lat, lon = func.get_coordinates(curr_data())
         temp, temp_min, temp_max = func.get_temperature(curr_data())
-        feels_like, humidity, pressure= func.get_feels(curr_data())
+        feels_like, humidity, humidity_description, pressure= func.get_feels(curr_data())
         city, country = func.city_and_country_names(curr_data())
-        description, icon = func.get_weather_description(curr_data())
+        description, icon, main = func.get_weather_description(curr_data())
         degree, speed = func.get_wind(curr_data())
         visibility = func.get_visibility(curr_data())
 
-        # Convert temperature from kelvin to celsius
-        temp, temp_min, temp_max = kelvin_to_celsius(temp), kelvin_to_celsius(temp_min), kelvin_to_celsius(temp_max)
+        wind_direction = func.compass(degree)
+        visibility_categories = func.get_visibility_options(visibility)
+        print(wind_direction)
 
+        # Convert temperature from kelvin to celsius
+        temp, temp_min, temp_max = func.kelvin_to_celsius(temp), func.kelvin_to_celsius(temp_min), func.kelvin_to_celsius(temp_max)
+        feels_like = func.kelvin_to_celsius(feels_like)
 
         # Full weather forecast message
         email_message = email_propt(lat, lon, 
                     temp, temp_min, temp_max,
-                    feels_like, humidity, pressure,
+                    feels_like, humidity, humidity_description,pressure,
                     city, country,
-                    description, icon,
+                    description, icon, main,
                     degree, speed,
-                    visibility
+                    visibility, wind_direction,
+                    visibility_categories
                     )
-        # func.mac_speak(email_message)
+        func.mac_speak(email_message)
 
         # func.connect_email(email, password, email_message)
         break
