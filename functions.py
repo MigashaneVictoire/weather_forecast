@@ -1,5 +1,13 @@
 import requests
+import os
 
+# send email importsi
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+# Main weather functios
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # api call
 def full_curr_city_json(url) -> str:
     """
@@ -8,7 +16,9 @@ def full_curr_city_json(url) -> str:
     Returns:
         current weather json data from openweathermap.org
     """
+   
     return requests.get(url).json()
+
 
 # coordinates data
 def get_coordinates(data) -> dict:
@@ -95,3 +105,68 @@ def get_visibility(data) -> dict:
     """
     visibility = data["visibility"]
     return visibility
+
+# other functions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# get sound from mac
+def mac_speak(message) -> str:
+    """
+    Parameters:
+        message: Weather forcast message to be read by os
+    returns:
+        Sound, reading the message
+    """
+    os.system(f"say {message}")
+
+# Convert temp from kelvin to celsius
+def kelvin_to_celsius(kelvin) -> float:
+    celsius = kelvin - 273.15
+    return celsius
+
+# Convert temp from kelvin to fahrenheit
+def kelvin_to_fahrenheit(kelvin) -> float:
+    fahrenheit = ((kelvin - 273.15) * (9/5)) + 32
+    return fahrenheit
+
+# connect and send email
+def connect_email(sender_email, passCode, message) -> "str, str, str":
+    """
+    Parameters:
+        sender_email: Email address that python will use to send the email
+        passCode: Sender App password from email provider. (NOT your current email password)
+        message: message to be sent to the frovided recepient
+
+    returns:
+        This function creates a basic email with a subject and message and sends it using the SMTP server specified. 
+    """
+    # Set up email details
+    receiver_email = "migashanevictoire@gmail.com"
+    subject = "Your Morning Weather Forcast From Python"
+    message = email_message
+
+    # Create a multipart message object and set the headers
+    msg = MIMEMultipart()
+    msg["From"] = sender_email
+    msg["To"] = receiver_email
+    msg["Subject"] = subject
+
+    # Attach the message to the email
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Set up the SMTP server and send the email
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+
+    # Set up the SMTP server and send the email:
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, passCode)
+        server.send_message(msg)
+        # server.sendmail(sender_email, receiver_email,msg)
+        print("Email sent successfuly!")
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+    finally:
+        server.quit()
