@@ -39,7 +39,8 @@ def email_propt(lat, lon,
                 description, icon, main,
                 degree, speed,
                 visibility, wind_direction,
-                visibility_categories
+                visibility_categories,
+                sunrise, sunset
                 ):
     """
     Parameters:
@@ -51,27 +52,19 @@ def email_propt(lat, lon,
             description, icon, main,
             degree, speed,
             visibility, wind_direction,
-            visibility_categories
+            visibility_categories,
+            sunrise, sunset
     Returns:
         Paragraph string describing the current weather forcust
     """
     name = "Victoire Migashane"
-#     email_message = f"The current weather in {city}, located at latitude {lat} and longitude {lon}, \
-# is characterized by {description}. The temperature is {temp} Celsius, with a maximum of {temp_max} Celsius, \
-# and a minimum of {temp_min} Celsius. The humidity level is at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
-# The wind is blowing at a speed of {speed} meters per second, from a direction of {degree} degrees. The visibility is \
-# excellent at {visibility} meters. The weather condition is represented by the presence of {description}. \
-# The weather code is 804, indicating the cloudiness. The sunrise occurred at 1684577705 seconds \
-# since the Unix epoch, while the sunset is expected to happen at 1684631015 seconds. {city} \
-# is located in the {country}, and the local time zone is Eastern Daylight Time."
-
     email_message = f"""Good morning {name}! Here's your daily python weather forecast for {city}:\n\n\
 Today, the weather in {city} is mostly {main} with {description}. The temperature is currently around {temp} Celsius, \
 with a maximum of {temp_max} Celsius, and a minimum of {temp_min} Celsius. \n\nToday's feels like temperature is {feels_like} Celsius. \
 The humidity is relatively {humidity_description} at {humidity}%, and the atmospheric pressure is {pressure} hPa. \
-The wind is blowing from the. {wind_direction}. at a speed of {speed} meters per second, with a direction of {degree} degrees. \n\n\
-Visibility is {visibility_categories}, reaching {visibility} meters. The sunrise was at the local time of 06:41 AM, and the sunset is expected to occur at 08:36 PM.\
-Enjoy your day in Grand Rapids, and don't forget to carry an umbrella or dress accordingly for the overcast conditions."""
+The wind is blowing from the {wind_direction} at a speed of {speed} meters per second, with a direction of {degree} degrees. Visibility \
+is {visibility_categories}, reaching {visibility} meters. The sunrise was at the local time of {sunrise} AM, \
+and the sunset is expected to occur at {sunset} PM. \n\nEnjoy your day in {city}, and don't forget to dress accordingly for the {description} conditions."""
     return email_message
 
 
@@ -101,10 +94,10 @@ if __name__ == "__main__":
         description, icon, main = func.get_weather_description(curr_data())
         degree, speed = func.get_wind(curr_data())
         visibility = func.get_visibility(curr_data())
+        sunrise, sunset = func.get_sunset_sunrise(curr_data())
 
         wind_direction = func.compass(degree)
         visibility_categories = func.get_visibility_options(visibility)
-        print(wind_direction)
 
         # Convert temperature from kelvin to celsius
         temp, temp_min, temp_max = func.kelvin_to_celsius(temp), func.kelvin_to_celsius(temp_min), func.kelvin_to_celsius(temp_max)
@@ -118,7 +111,8 @@ if __name__ == "__main__":
                     description, icon, main,
                     degree, speed,
                     visibility, wind_direction,
-                    visibility_categories
+                    visibility_categories,
+                    sunrise, sunset
                     )
         func.mac_speak(email_message)
 

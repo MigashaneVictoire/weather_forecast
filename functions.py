@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 import numpy as np
 import os
 
@@ -118,6 +119,27 @@ def get_visibility(data) -> dict:
     visibility = data["visibility"]
     return visibility
 
+def get_sunset_sunrise(data):
+    """
+    Parameters:
+        data: json data from api call
+    Returns:
+        sunrise: hour and minute for the sun rise
+        sunset: hour and minute for the sun set
+    """
+    sunrise = data["sys"]["sunrise"]
+    sunset = data["sys"]["sunset"]
+
+    # Convert seconds to datetime string
+    sunrise = datetime.utcfromtimestamp(sunrise).strftime('%Y-%m-%d %H:%M:%S')
+    sunset = datetime.utcfromtimestamp(sunset).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Restracture datetime to just time
+    sunrise = sunrise.split()[1][:-3]
+    sunset = sunset.split()[1][:-3]
+
+    return sunrise, sunset #datetime.time(sunrise), datetime.time(sunset)
+
 # other functions
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # get sound from mac
@@ -132,43 +154,58 @@ def mac_speak(message) -> str:
 
 # Convert temp from kelvin to celsius
 def kelvin_to_celsius(kelvin) -> float:
+    """
+    Parameters:
+        kelvin: float temp value to be converted
+    returns:
+        degrees in celsius
+    """
     celsius = kelvin - 273.15
     return round(celsius, 2)
 
 # categorize compass
-def compass(degree):
+def compass(degree) -> int or float:
+    """
+    Parameters:
+        degree: direction of wind in degrees
+    returns:
+        corresponding wind direction from based on compass
+    """
     # north
-    if degree >= 337.5 or degree in np.arange(0.0,22.5, 0.1):
+    if degree >= 337.5 or degree >= 0.0 and degree < 22.5:
         return "north"
     #north east
-    elif degree in np.arange(22.5, 67.5, 0.1):
+    elif degree >= 22.5 and degree < 67.5:
         return "north east"
     
     # east
-    elif degree in np.arange(67.5, 112.5, 0.1):
+    elif degree >= 67.5 and degree < 112.5:
         return "east"
     # south east
-    elif degree in np.arange(112.5, 157.5, 0.1):
+    elif degree >= 112.5 and degree < 157.5:
         return "south east"
     
     # south
-    elif degree in np.arange(157.5, 202.5, 0.1):
+    elif degree >= 157.5 and degree < 202.5:
         return "south"
     # south west
-    elif degree in np.arange(202.5, 247.5, 0.1):
+    elif degree >= 202.5 and degree < 247.5:
         return "south west"
     
     # west
-    elif degree in np.arange(247.5, 292.5, 0.1):
+    elif degree >= 247.5 and degree < 292.5:
         return "west"
     # north west
-    elif degree in np.arange(292.5, 337.5, 0.1):
+    elif degree >= 292.5 and degree < 337.5:
         return "north west"
     
 # categorize visibility
 def get_visibility_options(visibility) -> float:
     """
-    
+    Parameters:
+        visibility: float value to be coverted to kilometers
+    returns:
+        category of visibility
     """
     if (visibility / 1000) >= 10: # 10 kilometers
         return "excelent"
